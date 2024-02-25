@@ -1,5 +1,45 @@
 LOCAL_BIN:=$(CURDIR)/bin
 
+init: docker-down local-env-build docker-up docker-pull docker-build \
+	  wait-db db-migrations-up
+up: docker-up
+down: docker-down
+restart: down up
+
+local-env-build:
+	chmod 777 ./docker/common/env-init.sh
+	./docker/common/env-init.sh ./.env ./docker/.env ./docker/.local.env ./.env.local
+
+docker-up:
+	docker-compose up -d
+
+docker-down:
+	docker-compose down --remove-orphans
+
+docker-down-clear:
+	docker-compose down -v --remove-orphans
+
+docker-pull:
+	docker-compose pull
+
+docker-build:
+	docker-compose build --pull
+
+wait-db:
+	docker-compose run --rm --no-deps migrator wait-for-it db:5432 -t 30
+
+db-migrations-create:
+	docker-compose run --rm --no-deps migrator goose -dir migrations create $(filter-out $@,$(MAKECMDGOALS)) sql
+
+db-migrations-status:
+	docker-compose run --rm --no-deps migrator goose -dir migrations status
+
+db-migrations-up:
+	docker-compose run --rm --no-deps migrator goose -dir migrations up -v
+
+db-migrations-down:
+	docker-compose run --rm --no-deps migrator goose -dir migrations down -v
+
 install-golangci-lint:
 	GOBIN=$(LOCAL_BIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.53.3
 

@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16.2-alpine3.19
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+
+  migrator:
+    build:
+      context: docker
+      dockerfile: development/migrator/Dockerfile
+    environment:
+      GOOSE_DRIVER: "postgres"
+      GOOSE_DBSTRING: "host=db port=5432 dbname=${POSTGRES_DB} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} sslmode=disable"
+    volumes:
+      - ./migrations:/root/migrations
+
+volumes:
+  postgres:
