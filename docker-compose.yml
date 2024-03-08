@@ -9,17 +9,29 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${POSTGRES_EXTERNAL_PORT}:${POSTGRES_PORT}"
 
-  migrator:
+  cli:
     build:
-      context: docker
-      dockerfile: development/migrator/Dockerfile
+      context: ./docker
+      dockerfile: ./development/cli/Dockerfile
     environment:
       GOOSE_DRIVER: "postgres"
-      GOOSE_DBSTRING: "host=db port=5432 dbname=${POSTGRES_DB} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} sslmode=disable"
+      GOOSE_DBSTRING: "host=db port=${POSTGRES_PORT} dbname=${POSTGRES_DB} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} sslmode=disable"
     volumes:
-      - ./migrations:/root/migrations
+      - ./:/app
+      - golang:/go
+
+  server:
+    build:
+      context: ./docker
+      dockerfile: ./development/server/Dockerfile
+    volumes:
+      - ./:/app
+      - golang:/go
+    ports:
+      - "${GRPC_PORT}:${GRPC_PORT}"
 
 volumes:
+  golang:
   postgres:

@@ -1,17 +1,33 @@
-LOCAL_BIN:=$(CURDIR)/bin
+RUN:=-f docker-compose.yml -f docker-compose-run.yml
+DEBUG:=$(RUN) -f docker-compose-debug.yml
+CLI:=docker-compose run --rm --no-deps cli
 
-init: docker-down local-env-build docker-up docker-pull docker-build \
-	  wait-db db-migrations-up
-up: docker-up
+init: docker-down local-env-build \
+	init-up wait-db db-migrations-up vendor-refresh
+
+rebuild: docker-down local-env-build docker-build vendor-refresh
+
 down: docker-down
-restart: down up
+
+run: init grpc-run
+run-restart: down grpc-run
+
+debug: init grpc-debug
+debug-restart: down grpc-debug
+
+
+init-up:
+	docker-compose up -d
+
+grpc-run:
+	docker-compose $(RUN) up -d
+
+grpc-debug:
+	docker-compose $(DEBUG) up -d
 
 local-env-build:
 	chmod 777 ./docker/common/env-init.sh
 	./docker/common/env-init.sh ./.env ./docker/.env ./docker/.local.env ./.env.local
-
-docker-up:
-	docker-compose up -d
 
 docker-down:
 	docker-compose down --remove-orphans
@@ -26,43 +42,34 @@ docker-build:
 	docker-compose build --pull
 
 wait-db:
-	docker-compose run --rm --no-deps migrator wait-for-it db:5432 -t 30
+	$(CLI) wait-for-it db:5432 -t 30
 
 db-migrations-create:
-	docker-compose run --rm --no-deps migrator goose -dir migrations create $(filter-out $@,$(MAKECMDGOALS)) sql
+	$(CLI) goose -dir migrations create $(filter-out $@,$(MAKECMDGOALS)) sql
 
 db-migrations-status:
-	docker-compose run --rm --no-deps migrator goose -dir migrations status
+	$(CLI) goose -dir migrations status
 
 db-migrations-up:
-	docker-compose run --rm --no-deps migrator goose -dir migrations up -v
+	$(CLI) goose -dir migrations up -v
 
 db-migrations-down:
-	docker-compose run --rm --no-deps migrator goose -dir migrations down -v
+	$(CLI) goose -dir migrations down -v
 
-install-golangci-lint:
-	GOBIN=$(LOCAL_BIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.53.3
-
-install-deps:
-	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.32.0
-	GOBIN=$(LOCAL_BIN) go install -mod=mod google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
-
-get-deps:
-	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
-	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	go get -u google.golang.org/grpc
+vendor-refresh:
+	$(CLI) go mod vendor
 
 lint:
-	$(LOCAL_BIN)/golangci-lint run ./... --config .golangci.pipeline.yaml
+	$(CLI) golangci-lint run ./... --config .golangci.pipeline.yaml
 	
 generate:
 	make generate-note-api
 
 generate-note-api:
 	mkdir -p pkg/chat_v1
-	protoc --proto_path api/chat_v1 \
+	$(CLI) protoc --proto_path api/chat_v1 \
 	--go_out=pkg/chat_v1 --go_opt=paths=source_relative \
-	--plugin=protoc-gen-go=bin/protoc-gen-go \
+	--plugin=protoc-gen-go=/go/bin/protoc-gen-go \
 	--go-grpc_out=pkg/chat_v1 --go-grpc_opt=paths=source_relative \
-	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
+	--plugin=protoc-gen-go-grpc=/go/bin/protoc-gen-go-grpc \
 	api/chat_v1/chat.proto

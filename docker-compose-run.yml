@@ -1,0 +1,4 @@
+version: '3.9'
+services:
+  server:
+    entrypoint: ['go', 'run', 'cmd/grpc_server/main.go']
