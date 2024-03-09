@@ -85,7 +85,7 @@ test-coverage:
 	grep -v 'mocks\|config\|/pkg/chat_v1' coverage.tmp.out  > coverage.out
 	rm coverage.tmp.out
 	$(CLI) go tool cover -func=./coverage.out | grep "total";
-	#rm coverage.out
+	rm coverage.out
 
 test-coverage-ci:
 	go test ./... -coverprofile=coverage.tmp.out -covermode=atomic -coverpkg=$(PROJECT)/... -race -count=5
