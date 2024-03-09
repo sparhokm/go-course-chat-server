@@ -2,9 +2,9 @@ package app
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sparhokm/go-course-ms-auth/pkg/client/db"
 	"github.com/sparhokm/go-course-ms-auth/pkg/client/db/pg"
 	"github.com/sparhokm/go-course-ms-auth/pkg/client/db/transaction"
