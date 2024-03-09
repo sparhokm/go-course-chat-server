@@ -1,7 +1,7 @@
 package chat
 
 import (
-	"github.com/sparhokm/go-course-ms-chat-server/internal/client/db"
+	"github.com/sparhokm/go-course-ms-auth/pkg/client/db"
 	"github.com/sparhokm/go-course-ms-chat-server/internal/repository"
 	"github.com/sparhokm/go-course-ms-chat-server/internal/service"
 )

@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	sq "github.com/Masterminds/squirrel"
+	"github.com/sparhokm/go-course-ms-auth/pkg/client/db"
 
-	"github.com/sparhokm/go-course-ms-chat-server/internal/client/db"
+	sq "github.com/Masterminds/squirrel"
 )
 
 const (

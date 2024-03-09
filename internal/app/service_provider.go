@@ -2,12 +2,14 @@ package app
 
 import (
 	"context"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 
+	"github.com/sparhokm/go-course-ms-auth/pkg/client/db"
+	"github.com/sparhokm/go-course-ms-auth/pkg/client/db/pg"
+	"github.com/sparhokm/go-course-ms-auth/pkg/client/db/transaction"
+
 	"github.com/sparhokm/go-course-ms-chat-server/internal/api/chat"
-	"github.com/sparhokm/go-course-ms-chat-server/internal/client/db"
-	"github.com/sparhokm/go-course-ms-chat-server/internal/client/db/pg"
-	"github.com/sparhokm/go-course-ms-chat-server/internal/client/db/transaction"
 	"github.com/sparhokm/go-course-ms-chat-server/internal/closer"
 	"github.com/sparhokm/go-course-ms-chat-server/internal/config"
 	"github.com/sparhokm/go-course-ms-chat-server/internal/repository"
@@ -35,11 +37,12 @@ func newServiceProvider(config *config.Config) *serviceProvider {
 
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 	if s.dbClient == nil {
-		cl, err := pg.New(ctx, s.config.PGConfig.DSN())
+		dbc, err := pgxpool.New(ctx, s.config.PGConfig.DSN())
 		if err != nil {
 			log.Fatalf("failed to create db client: %v", err)
 		}
 
+		cl := pg.New(dbc)
 		err = cl.DB().Ping(ctx)
 		if err != nil {
 			log.Fatalf("ping error: %s", err.Error())

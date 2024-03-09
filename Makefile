@@ -1,8 +1,10 @@
+PROJECT = github.com/sparhokm/go-course-ms-chat-server
+
 RUN:=-f docker-compose.yml -f docker-compose-run.yml
 DEBUG:=$(RUN) -f docker-compose-debug.yml
 CLI:=docker-compose run --rm --no-deps cli
 
-init: docker-down local-env-build \
+init: local-env-build docker-down \
 	init-up wait-db db-migrations-up vendor-refresh
 
 rebuild: docker-down local-env-build docker-build vendor-refresh
@@ -57,6 +59,7 @@ db-migrations-down:
 	$(CLI) goose -dir migrations down -v
 
 vendor-refresh:
+	$(CLI) go mod tidy;
 	$(CLI) go mod vendor
 
 lint:
@@ -73,3 +76,18 @@ generate-note-api:
 	--go-grpc_out=pkg/chat_v1 --go-grpc_opt=paths=source_relative \
 	--plugin=protoc-gen-go-grpc=/go/bin/protoc-gen-go-grpc \
 	api/chat_v1/chat.proto
+
+mockery:
+	$(CLI) mockery
+
+test-coverage:
+	$(CLI) go test ./... -coverprofile=coverage.tmp.out -covermode=count -coverpkg=$(PROJECT)/... -count=5
+	grep -v 'mocks\|config\|/pkg/chat_v1' coverage.tmp.out  > coverage.out
+	rm coverage.tmp.out
+	$(CLI) go tool cover -func=./coverage.out | grep "total";
+	#rm coverage.out
+
+test-coverage-ci:
+	go test ./... -coverprofile=coverage.tmp.out -covermode=atomic -coverpkg=$(PROJECT)/... -race -count=5
+	grep -v 'mocks\|config\|/pkg/chat_v1' coverage.tmp.out  > coverage.out
+	rm coverage.tmp.out

@@ -22,7 +22,12 @@ jobs:
           run: go build -o ./bin/ -v ./...
 
         - name: Test
-          run: go test -v ./...
+          run: make test-coverage-ci
+
+        - name: Upload coverage to Codecov
+          uses: codecov/codecov-action@v4
+          env:
+            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   linter:
     name: lint

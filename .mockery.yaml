@@ -1,0 +1,7 @@
+with-expecter: True
+all: True
+dir: "{{.InterfaceDir}}/mocks"
+filename: "{{.InterfaceName}}.go"
+outpkg: "mocks"
+packages:
+  github.com/sparhokm/go-course-ms-chat-server/internal/service:
