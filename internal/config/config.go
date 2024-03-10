@@ -11,8 +11,10 @@ import (
 )
 
 type Config struct {
-	GRPCConfig GRPCConfig
-	PGConfig   PGConfig
+	GRPCConfig    GRPCConfig
+	HTTPConfig    HTTPConfig
+	SwaggerConfig SwaggerConfig
+	PGConfig      PGConfig
 }
 
 func MustLoad() *Config {
@@ -28,12 +30,22 @@ func MustLoad() *Config {
 		log.Fatalf("failed to get grpc config: %v", err)
 	}
 
+	httpConfig, err := env.NewHTTPConfig()
+	if err != nil {
+		log.Fatalf("failed to get http config: %v", err)
+	}
+
+	swaggerConfig, err := env.NewSwaggerConfig()
+	if err != nil {
+		log.Fatalf("failed to get swagger config: %v", err)
+	}
+
 	pgConfig, err := env.NewPGConfig()
 	if err != nil {
 		log.Fatalf("failed to get pg config: %v", err)
 	}
 
-	return &Config{GRPCConfig: grpcConfig, PGConfig: pgConfig}
+	return &Config{GRPCConfig: grpcConfig, HTTPConfig: httpConfig, SwaggerConfig: swaggerConfig, PGConfig: pgConfig}
 }
 
 func fetchConfigPath() string {

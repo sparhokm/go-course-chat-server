@@ -54,9 +54,13 @@ func (r *repo) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 
-	_, err = r.db.DB().ExecContext(ctx, db.Query{Name: "user.delete", QueryRaw: query}, args...)
+	tag, err := r.db.DB().ExecContext(ctx, db.Query{Name: "user.delete", QueryRaw: query}, args...)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %v", err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("user not found")
 	}
 
 	return nil

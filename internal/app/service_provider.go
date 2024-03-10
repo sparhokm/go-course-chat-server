@@ -93,3 +93,11 @@ func (s *serviceProvider) ChatImpl(ctx context.Context) *chat.Implementation {
 func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	return s.config.GRPCConfig
 }
+
+func (s *serviceProvider) HTTPConfig() config.GRPCConfig {
+	return s.config.HTTPConfig
+}
+
+func (s *serviceProvider) SwaggerConfig() config.GRPCConfig {
+	return s.config.SwaggerConfig
+}
