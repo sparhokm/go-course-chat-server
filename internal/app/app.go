@@ -104,7 +104,7 @@ func (a *App) initDeps(ctx context.Context) error {
 func (a *App) initGRPCServer(ctx context.Context) {
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
-		grpc.UnaryInterceptor(interceptor.ValidateInterceptor),
+		grpc.ChainUnaryInterceptor(interceptor.ValidateInterceptor, interceptor.NewAccessCheck(a.serviceProvider.AccessApiClient()).UnaryServerInterceptor),
 	)
 
 	reflection.Register(a.grpcServer)

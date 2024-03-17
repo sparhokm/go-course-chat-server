@@ -15,3 +15,7 @@ type HTTPConfig interface {
 type PGConfig interface {
 	DSN() string
 }
+
+type AccessApiConfig interface {
+	Address() string
+}

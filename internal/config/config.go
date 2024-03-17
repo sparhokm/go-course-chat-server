@@ -11,10 +11,11 @@ import (
 )
 
 type Config struct {
-	GRPCConfig    GRPCConfig
-	HTTPConfig    HTTPConfig
-	SwaggerConfig SwaggerConfig
-	PGConfig      PGConfig
+	GRPCConfig      GRPCConfig
+	HTTPConfig      HTTPConfig
+	SwaggerConfig   SwaggerConfig
+	PGConfig        PGConfig
+	AccessApiConfig AccessApiConfig
 }
 
 func MustLoad() *Config {
@@ -45,7 +46,12 @@ func MustLoad() *Config {
 		log.Fatalf("failed to get pg config: %v", err)
 	}
 
-	return &Config{GRPCConfig: grpcConfig, HTTPConfig: httpConfig, SwaggerConfig: swaggerConfig, PGConfig: pgConfig}
+	accessApiConfig, err := env.NewAccessApiClient()
+	if err != nil {
+		log.Fatalf("failed to get access api config: %v", err)
+	}
+
+	return &Config{GRPCConfig: grpcConfig, HTTPConfig: httpConfig, SwaggerConfig: swaggerConfig, PGConfig: pgConfig, AccessApiConfig: accessApiConfig}
 }
 
 func fetchConfigPath() string {

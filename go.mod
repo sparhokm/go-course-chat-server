@@ -1,6 +1,6 @@
 module github.com/sparhokm/go-course-ms-chat-server
 
-go 1.21.5
+go 1.22.1
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
@@ -9,6 +9,7 @@ require (
 	github.com/jackc/pgx/v5 v5.5.4
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/cors v1.10.1
+	github.com/sparhokm/go-course-ms-auth/pkg/access_v1 v0.0.0-20240317001746-0bc465041cc3
 	github.com/sparhokm/go-course-ms-auth/pkg/client v0.0.0-20240309064856-04ebda3303f6
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/http-swagger/v2 v2.0.2

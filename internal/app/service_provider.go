@@ -5,9 +5,12 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	descAccess "github.com/sparhokm/go-course-ms-auth/pkg/access_v1"
 	"github.com/sparhokm/go-course-ms-auth/pkg/client/db"
 	"github.com/sparhokm/go-course-ms-auth/pkg/client/db/pg"
 	"github.com/sparhokm/go-course-ms-auth/pkg/client/db/transaction"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/sparhokm/go-course-ms-chat-server/internal/api/chat"
 	"github.com/sparhokm/go-course-ms-chat-server/internal/closer"
@@ -29,6 +32,8 @@ type serviceProvider struct {
 	chatService service.ChatService
 
 	chatImpl *chat.Implementation
+
+	accessApiClient descAccess.AccessV1Client
 }
 
 func newServiceProvider(config *config.Config) *serviceProvider {
@@ -90,6 +95,22 @@ func (s *serviceProvider) ChatImpl(ctx context.Context) *chat.Implementation {
 	return s.chatImpl
 }
 
+func (s *serviceProvider) AccessApiClient() descAccess.AccessV1Client {
+	if s.accessApiClient == nil {
+		conn, err := grpc.Dial(
+			s.AccessApiConfig().Address(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			//grpc.WithIdleTimeout(time.Second),
+		)
+		if err != nil {
+			log.Fatalf("failed to dial GRPC client: %v", err)
+		}
+		s.accessApiClient = descAccess.NewAccessV1Client(conn)
+	}
+
+	return s.accessApiClient
+}
+
 func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	return s.config.GRPCConfig
 }
@@ -100,4 +121,8 @@ func (s *serviceProvider) HTTPConfig() config.GRPCConfig {
 
 func (s *serviceProvider) SwaggerConfig() config.GRPCConfig {
 	return s.config.SwaggerConfig
+}
+
+func (s *serviceProvider) AccessApiConfig() config.AccessApiConfig {
+	return s.config.AccessApiConfig
 }
