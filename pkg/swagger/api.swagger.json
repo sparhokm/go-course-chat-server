@@ -121,10 +121,11 @@
     "chat_v1CreateIn": {
       "type": "object",
       "properties": {
-        "usernames": {
+        "userIds": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "format": "int64"
           }
         }
       }
@@ -138,18 +139,31 @@
         }
       }
     },
-    "chat_v1SendMessageIn": {
+    "chat_v1Message": {
       "type": "object",
       "properties": {
         "from": {
-          "type": "string"
+          "type": "string",
+          "format": "int64"
         },
         "text": {
           "type": "string"
         },
-        "timestamp": {
+        "createdAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "chat_v1SendMessageIn": {
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "text": {
+          "type": "string"
         }
       }
     },

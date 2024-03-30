@@ -12,8 +12,8 @@ import (
 const (
 	tableName = "chats"
 
-	idColumn        = "id"
-	userNamesColumn = "user_names"
+	idColumn      = "id"
+	userIdsColumn = "user_ids"
 )
 
 type repo struct {
@@ -24,11 +24,11 @@ func NewRepository(db db.Client) *repo {
 	return &repo{db: db}
 }
 
-func (r *repo) Create(ctx context.Context, userNames []string) (int64, error) {
+func (r *repo) Create(ctx context.Context, userIds []int64) (int64, error) {
 	builder := sq.Insert(tableName).
 		PlaceholderFormat(sq.Dollar).
-		Columns(userNamesColumn).
-		Values(userNames).
+		Columns(userIdsColumn).
+		Values(userIds).
 		Suffix("RETURNING id")
 
 	query, args, err := builder.ToSql()
@@ -64,4 +64,27 @@ func (r *repo) Delete(ctx context.Context, id int64) error {
 	}
 
 	return nil
+}
+
+func (r *repo) GetUserIds(ctx context.Context, id int64) ([]int64, error) {
+	builder := sq.Select(userIdsColumn).
+		PlaceholderFormat(sq.Dollar).
+		From(tableName).
+		Where(sq.Eq{idColumn: id}).
+		Limit(1)
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	row := r.db.DB().QueryRowContext(ctx, db.Query{Name: "user.get", QueryRaw: query}, args...)
+
+	var ids []int64
+	err = row.Scan(&ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return ids, nil
 }

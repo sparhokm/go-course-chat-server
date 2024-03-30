@@ -12,6 +12,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
+	"github.com/sparhokm/go-course-ms-chat-server/internal/interceptor"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -19,7 +20,6 @@ import (
 
 	"github.com/sparhokm/go-course-ms-chat-server/internal/closer"
 	"github.com/sparhokm/go-course-ms-chat-server/internal/config"
-	"github.com/sparhokm/go-course-ms-chat-server/internal/interceptor"
 	desc "github.com/sparhokm/go-course-ms-chat-server/pkg/chat_v1"
 )
 
@@ -105,6 +105,7 @@ func (a *App) initGRPCServer(ctx context.Context) {
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
 		grpc.ChainUnaryInterceptor(interceptor.ValidateInterceptor, interceptor.NewAccessCheck(a.serviceProvider.AccessApiClient()).UnaryServerInterceptor),
+		grpc.StreamInterceptor(interceptor.NewAccessStreamCheck(a.serviceProvider.AccessApiClient()).StreamServerInterceptor),
 	)
 
 	reflection.Register(a.grpcServer)

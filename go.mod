@@ -9,8 +9,7 @@ require (
 	github.com/jackc/pgx/v5 v5.5.4
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/cors v1.10.1
-	github.com/sparhokm/go-course-ms-auth/pkg/access_v1 v0.0.0-20240317001746-0bc465041cc3
-	github.com/sparhokm/go-course-ms-auth/pkg/client v0.0.0-20240309064856-04ebda3303f6
+	github.com/sparhokm/go-course-ms-auth v0.0.0-20240330045247-053c4aedd29e
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	google.golang.org/genproto/googleapis/api v0.0.0-20240125205218-1f4bbc51befe
@@ -33,7 +32,6 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
-	github.com/lib/pq v1.10.2 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

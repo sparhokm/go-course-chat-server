@@ -7,7 +7,7 @@ import (
 )
 
 func (i *Implementation) Create(ctx context.Context, req *desc.CreateIn) (*desc.CreateOut, error) {
-	id, err := i.chatService.Create(ctx, req.GetUsernames())
+	id, err := i.chatService.Create(ctx, req.GetUserIds())
 	if err != nil {
 		return nil, err
 	}

@@ -21,9 +21,57 @@ func (_m *MockChatService) EXPECT() *MockChatService_Expecter {
 	return &MockChatService_Expecter{mock: &_m.Mock}
 }
 
-// Create provides a mock function with given fields: ctx, userNames
-func (_m *MockChatService) Create(ctx context.Context, userNames []string) (int64, error) {
-	ret := _m.Called(ctx, userNames)
+// CheckAccess provides a mock function with given fields: ctx, chatId, userId
+func (_m *MockChatService) CheckAccess(ctx context.Context, chatId int64, userId int64) error {
+	ret := _m.Called(ctx, chatId, userId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckAccess")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64) error); ok {
+		r0 = rf(ctx, chatId, userId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockChatService_CheckAccess_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CheckAccess'
+type MockChatService_CheckAccess_Call struct {
+	*mock.Call
+}
+
+// CheckAccess is a helper method to define mock.On call
+//   - ctx context.Context
+//   - chatId int64
+//   - userId int64
+func (_e *MockChatService_Expecter) CheckAccess(ctx interface{}, chatId interface{}, userId interface{}) *MockChatService_CheckAccess_Call {
+	return &MockChatService_CheckAccess_Call{Call: _e.mock.On("CheckAccess", ctx, chatId, userId)}
+}
+
+func (_c *MockChatService_CheckAccess_Call) Run(run func(ctx context.Context, chatId int64, userId int64)) *MockChatService_CheckAccess_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(int64), args[2].(int64))
+	})
+	return _c
+}
+
+func (_c *MockChatService_CheckAccess_Call) Return(_a0 error) *MockChatService_CheckAccess_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockChatService_CheckAccess_Call) RunAndReturn(run func(context.Context, int64, int64) error) *MockChatService_CheckAccess_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Create provides a mock function with given fields: ctx, userIds
+func (_m *MockChatService) Create(ctx context.Context, userIds []int64) (int64, error) {
+	ret := _m.Called(ctx, userIds)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
@@ -31,17 +79,17 @@ func (_m *MockChatService) Create(ctx context.Context, userNames []string) (int6
 
 	var r0 int64
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, []string) (int64, error)); ok {
-		return rf(ctx, userNames)
+	if rf, ok := ret.Get(0).(func(context.Context, []int64) (int64, error)); ok {
+		return rf(ctx, userIds)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, []string) int64); ok {
-		r0 = rf(ctx, userNames)
+	if rf, ok := ret.Get(0).(func(context.Context, []int64) int64); ok {
+		r0 = rf(ctx, userIds)
 	} else {
 		r0 = ret.Get(0).(int64)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, []string) error); ok {
-		r1 = rf(ctx, userNames)
+	if rf, ok := ret.Get(1).(func(context.Context, []int64) error); ok {
+		r1 = rf(ctx, userIds)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -56,14 +104,14 @@ type MockChatService_Create_Call struct {
 
 // Create is a helper method to define mock.On call
 //   - ctx context.Context
-//   - userNames []string
-func (_e *MockChatService_Expecter) Create(ctx interface{}, userNames interface{}) *MockChatService_Create_Call {
-	return &MockChatService_Create_Call{Call: _e.mock.On("Create", ctx, userNames)}
+//   - userIds []int64
+func (_e *MockChatService_Expecter) Create(ctx interface{}, userIds interface{}) *MockChatService_Create_Call {
+	return &MockChatService_Create_Call{Call: _e.mock.On("Create", ctx, userIds)}
 }
 
-func (_c *MockChatService_Create_Call) Run(run func(ctx context.Context, userNames []string)) *MockChatService_Create_Call {
+func (_c *MockChatService_Create_Call) Run(run func(ctx context.Context, userIds []int64)) *MockChatService_Create_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].([]string))
+		run(args[0].(context.Context), args[1].([]int64))
 	})
 	return _c
 }
@@ -73,7 +121,7 @@ func (_c *MockChatService_Create_Call) Return(_a0 int64, _a1 error) *MockChatSer
 	return _c
 }
 
-func (_c *MockChatService_Create_Call) RunAndReturn(run func(context.Context, []string) (int64, error)) *MockChatService_Create_Call {
+func (_c *MockChatService_Create_Call) RunAndReturn(run func(context.Context, []int64) (int64, error)) *MockChatService_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }

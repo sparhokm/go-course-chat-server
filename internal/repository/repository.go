@@ -5,6 +5,7 @@ import (
 )
 
 type ChatRepository interface {
-	Create(ctx context.Context, userNames []string) (int64, error)
+	Create(ctx context.Context, userIds []int64) (int64, error)
+	GetUserIds(ctx context.Context, id int64) ([]int64, error)
 	Delete(ctx context.Context, id int64) error
 }

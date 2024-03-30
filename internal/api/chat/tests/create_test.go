@@ -20,7 +20,7 @@ func TestCreate(t *testing.T) {
 
 		serviceErr = fmt.Errorf("service error")
 
-		usernames = []string{"Name", "Name2"}
+		userIds = []int64{1, 2}
 
 		id        int64 = 100
 		createOut       = &desc.CreateOut{
@@ -38,23 +38,23 @@ func TestCreate(t *testing.T) {
 		{
 			name: "success case",
 			createIn: &desc.CreateIn{
-				Usernames: usernames,
+				UserIds: userIds,
 			},
 			want:      createOut,
 			expectErr: false,
 			prepare: func(m *chatServiceMock.MockChatService) {
-				m.EXPECT().Create(ctx, usernames).Return(id, nil)
+				m.EXPECT().Create(ctx, userIds).Return(id, nil)
 			},
 		},
 		{
 			name: "user service error",
 			createIn: &desc.CreateIn{
-				Usernames: usernames,
+				UserIds: userIds,
 			},
 			want:      nil,
 			expectErr: true,
 			prepare: func(m *chatServiceMock.MockChatService) {
-				m.EXPECT().Create(ctx, usernames).Return(0, serviceErr)
+				m.EXPECT().Create(ctx, userIds).Return(0, serviceErr)
 			},
 		},
 	}
